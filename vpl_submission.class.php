@@ -752,6 +752,8 @@ class mod_vpl_submission {
         $nl = vpl_detect_newline($text);
         $lines = explode($nl,$text);
         $caseToShow=''; //Pre to show
+        $grid = false;
+        $grid_grade = [0, 0, 0, 0, 0, 0, 0, 0, 0];
         foreach($lines as $line){
             $clean=trim($line);
             //End of case?
@@ -782,6 +784,29 @@ class mod_vpl_submission {
                 $pos=strpos($line,'>');
                 $rest=substr($line,$pos+1);
                 $caseToShow .= $rest."\n";
+            }elseif(!$grid && strlen($clean)>0 && strncmp($clean, "<grid>", 6)==0) { //Grid start
+                $grid = true;
+            }elseif($grid && strlen($clean)>0 && strncmp($clean, "preparation:", 12)==0) {
+                $grid_grade[0] = $this->get_grid_grade(substr($line,12));
+            }elseif($grid && strlen($clean)>0 && strncmp($clean, "autonomy:", 9)==0) {
+                $grid_grade[1] = $this->get_grid_grade(substr($line,9));
+            }elseif($grid && strlen($clean)>0 && strncmp($clean, "execution:", 10)==0) {
+                $grid_grade[2] = $this->get_grid_grade(substr($line,10));
+            }elseif($grid && strlen($clean)>0 && strncmp($clean, "complete:", 9)==0) {
+                $grid_grade[3] = $this->get_grid_grade(substr($line,9));
+            }elseif($grid && strlen($clean)>0 && strncmp($clean, "test:", 5)==0) {
+                $grid_grade[4] = $this->get_grid_grade(substr($line,5));
+            }elseif($grid && strlen($clean)>0 && strncmp($clean, "presentation_comments:", 22)==0) {
+                $grid_grade[5] = $this->get_grid_grade(substr($line,22));
+            }elseif($grid && strlen($clean)>0 && strncmp($clean, "visibility:", 11)==0) {
+                $grid_grade[6] = $this->get_grid_grade(substr($line,11));
+            }elseif($grid && strlen($clean)>0 && strncmp($clean, "top_down_analysis:", 18)==0) {
+                $grid_grade[7] = $this->get_grid_grade(substr($line,18));
+            }elseif($grid && strlen($clean)>0 && strncmp($clean, "graceful_efficiency:", 20)==0) {
+                $grid_grade[8] = $this->get_grid_grade(substr($line,20));
+            }elseif($grid && strlen($clean)>0 && strncmp($clean, "</grid>", 7)==0) { //Grid end
+                $grid = false;
+                $comment .= $this->get_grid($grid_grade);
             } elseif(strlen($clean)>8 &&
                      (substr($clean,0,5)=="http:" || substr($clean,0,6)=="https:")) {
                 //Is url
@@ -817,6 +842,55 @@ class mod_vpl_submission {
         $html .= $this->get_last_comment($title, $comment,$dropdown);
         return $html;
     }
+
+    function get_grid_grade($line) {
+        $ret = intval($line);
+        $ret = max($ret, 0);
+        $ret = min($ret, 4);
+        return $ret;
+    }
+
+    function get_grid($grid_grade) {
+        $abs_grid_grade = [];
+        for ( $i = 0; $i < 10; $i++) {
+            if ($grid_grade[$i] != 0) {
+                $abs_grid_grade[$i] = $grid_grade[$i] % 5 + $i*4;
+            }
+        }
+        $table = file_get_contents(dirname(__FILE__).'/table.html');
+        $tds = explode("<td>",$table);
+        $ret = $tds[0];
+        array_shift($tds);
+        $cpt = 1;
+        foreach ($tds as $td) {
+            if (in_array($cpt, $abs_grid_grade)) {
+                switch(($cpt-1)%4) {
+                    case 0: 
+                        $ret .= "<td bgcolor=\"#FF462D\">";
+                        break;
+                    case 1:
+                        $ret .= "<td bgcolor=\"#FF8D23\">";
+                        break;
+                    case 2:
+                        $ret .= "<td bgcolor=\"#A3FF23\">";
+                        break;
+                    case 3:
+                        $ret .= "<td bgcolor=\"#1EFF43\">";
+                        break;
+                }
+            }
+            else {
+                $ret .= "<td>";
+            }
+            $ret .= $td;
+            $cpt++;
+        }
+        /*$ret .= "<TABLE BORDER><TR><TD>";
+        $ret .= print_r($grid_grade, true);
+        $ret .= "</TD></TR></TABLE>";*/
+        return $ret;
+    }
+
     /**
      * Add a new text to the list
      */
