@@ -115,7 +115,7 @@ class mod_vpl_grade_form extends vpl_form {
         $this->addHTML('<br />');
         if($grade !=0){
             $this->addHTML(s(get_string('comments',VPL)).'<br />');
-            $this->addTextArea('comments','',8,70);
+            $this->addTextArea('comments','',18,70);
             $this->addHTML('<br />');
         }
         if(!empty($CFG->enableoutcomes)){

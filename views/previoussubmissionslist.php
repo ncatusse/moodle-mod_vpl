@@ -38,7 +38,7 @@ $vpl->prepare_page('views/previoussubmissionslist.php', array('id' => $id, 'user
 
 $course = $vpl->get_course();
 //$vpl->require_capability(VPL_GRADE_CAPABILITY);
-if($USER-id != $userid){ //Not owner
+if($USER->id != $userid){ //Not owner
     $vpl->require_capability(VPL_GRADE_CAPABILITY);
 }
 \mod_vpl\event\submission_previous_upload_viewed::log(array(
@@ -69,7 +69,13 @@ foreach ($submissionslist as $submission) {
     }else{
         $link = vpl_mod_href('forms/submissionview.php','id',$id,'userid',$userid,'submissionid',$submission->id);
     }
-    $date = '<a href="'.$link.'">'.userdate($submission->datesubmitted).'</a>';
+    //$date = '<a href="'.$link.'">'.userdate($submission->datesubmitted).'</a>';
+    if($submission->grader != 0) {
+        $date = '<a href="'.$link.'" style="color: rgb(255,0,0)">'.userdate($submission->datesubmitted).': Evaluated</a>';
+    }
+    else {
+        $date = '<a href="'.$link.'">'.userdate($submission->datesubmitted).'</a>';
+    }
     $sub = new mod_vpl_submission($vpl,$submission);
     $submissions[] = $sub;
     $table->data[] = array ($nsub--,
