@@ -124,7 +124,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
      * @return object with files, limits, interactive and other info
      */
     function prepare_execution($type, &$already=array(), $vpl=null){
-        global $CFG;
+        global $CFG, $DB;
         if($vpl == null){
             $vpl = $this->vpl;
         }
@@ -221,6 +221,12 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
         //Info send with script
         $info ="#!/bin/bash\n";
         $info .='export VPL_LANG='.vpl_get_lang(true)."\n";
+        $subinstance=$this->get_instance();
+        $info .='export MOODLE_USER_ID='.($subinstance->userid)."\n";
+        if($user=$DB->get_record('user', array('id'=>$subinstance->userid))){
+            $info .='export MOODLE_USER_NAME='.addslashes($user->username)."\n";
+            //$info .='export MOODLE_USER_NAME='.addslashes($vpl->fullname($user,false))."\n";
+        }
         if($type == 2){ //If evaluation add information
             $info .='export VPL_MAXTIME='.$data->maxtime."\n";
             $info .='export VPL_MAXMEMORY='.$data->maxmemory."\n";
