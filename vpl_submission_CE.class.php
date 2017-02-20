@@ -45,6 +45,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
                             'lua' => 'lua',
                             'sh' => 'shell',
                             'pas' => 'pascal','p' => 'pascal',
+                            'mod' => 'opl',
                             'f77' => 'fortran', 'f' => 'fortran',
                             'pl' => 'prolog', 'pro' => 'prolog',
                             'htm' => 'html', 'html' => 'html',
