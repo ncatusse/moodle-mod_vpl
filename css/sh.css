@@ -5,6 +5,7 @@
 .vpl_s:HOVER {background-color: #FFB0FF }
 .vpl_c {color:#78B078}
 .vpl_c:HOVER {background-color: #B0FFFF;}
+.vpl_vt{background-color:red; color: white;}
 .vpl_m {color:#800000}
 .vpl_m:HOVER {background-color: silver;}
 .vpl_r {color:#0000B0; font-style: oblique;}

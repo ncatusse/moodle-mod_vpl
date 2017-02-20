@@ -14,8 +14,8 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 	var message ='';
 	var tdialog = $JQVPL('#'+dialog_id);
 	var terminal = new Terminal({
-		cols : 80,
-		rows : 24,
+		cols : 120,
+		rows : 36,
 		useStyle : true,
 		screenKeys : true
 	});
